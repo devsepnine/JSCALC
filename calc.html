@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="웹 계산기 입니다.">
+    <meta name="keywords" content="웹 계산기 js">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+    <title>계산기</title>
+    <link rel="stylesheet" href="../../MobileWebProject/css/reset.css" />
+    <link rel="stylesheet" href="../CSS/calc.css" />
+</head>
+
+<body>
+    <section>
+        <div class="div_calc stop_dragging">
+            <!--            디스플레이 영역-->
+            <div class="calc_display">
+                <div class="div_warning">15자리 이상의 숫자계산은 오차가 있을 수 있습니다.</div>
+                <input id="subView" type="text" value="" class="display_operand-sub stop_dragging" readonly disabled/>
+                <span id="viewOperator" class="display_operator"></span>
+                <input id="mainView" type="text" value="0" class="display_operand-main stop_dragging" readonly disabled/>
+            </div>
+            <!--            키패드 버튼 영역-->
+            <div id="keypad" class="calc_keypad">
+                <div class="calc_btn calc_btn-black" data-cmd="bs"><img alt="backspace" class="btn_ico" src="../ico/backspace.png"></div>
+                <div class="calc_btn calc_btn-black" data-cmd="+"><img alt="plus" class="btn_ico" src="../ico/plus.png"></div>
+                <div class="calc_btn calc_btn-black" data-cmd="-"><img alt="minus" class="btn_ico" src="../ico/minus.png"></div>
+                <div class="calc_btn calc_btn-black" data-cmd="ac"><img alt="delete" class="btn_ico" src="../ico/delete.png"></div>
+                <div class="calc_btn calc_btn-gery" data-cmd="7">7</div>
+                <div class="calc_btn calc_btn-gery" data-cmd="8">8</div>
+                <div class="calc_btn calc_btn-gery" data-cmd="9">9</div>
+                <div class="calc_btn calc_btn-black" data-cmd="*"><img alt="multiple" class="btn_ico" src="../ico/multiple.png"></div>
+                <div class="calc_btn calc_btn-gery" data-cmd="4">4</div>
+                <div class="calc_btn calc_btn-gery" data-cmd="5">5</div>
+                <div class="calc_btn calc_btn-gery" data-cmd="6">6</div>
+                <div class="calc_btn calc_btn-black" data-cmd="/"><img alt="division" class="btn_ico" src="../ico/division.png"></div>
+                <div class="calc_btn calc_btn-gery" data-cmd="1">1</div>
+                <div class="calc_btn calc_btn-gery" data-cmd="2">2</div>
+                <div class="calc_btn calc_btn-gery" data-cmd="3">3</div>
+                <div class="calc_btn calc_btn-row-2x calc_btn-orange" data-cmd="result"><img alt="equal" class="btn_ico" src="../ico/equal.png"></div>
+                <div class="calc_btn calc_btn-col-2x calc_btn-gery" data-cmd="0">0</div>
+                <div class="calc_btn calc_btn-gery" data-cmd="dot">.</div>
+            </div>
+        </div>
+    </section>
+    <script type="text/javascript" src="../JS/calc.js"></script>
+</body>
+
+</html>
