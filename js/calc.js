@@ -1,43 +1,67 @@
 const Display = class{
-	#mainView; #subView; #viewOprtr; #tempOprnd; #saveOprnd; #oprtr; #fontUnit;
 	constructor() {
-		this.#mainView = document.getElementById("mainView");
-		this.#subView = document.getElementById("subView");
-		this.#viewOprtr = document.getElementById("viewOperator");
-		this.#tempOprnd = 0;
-		this.#saveOprnd = '';
-		this.#oprtr = '';
-		this.#fontUnit = "vw";
+		function displayClosure(mainView, subView, viewOprtr){
+			var tempOprnd = 0, saveOprnd = '', oprtr = '', fontUnit = 'vw';
+			return {
+				getMainView : _=>{
+					return mainView;
+				},
+				getSubView: _=>{
+					return subView;
+				},
+				getViewOprtr: _=>{
+					return viewOprtr;
+				},
+				getTempOprnd: _=>{
+					return tempOprnd;
+				},
+				setTempOprnd: (number)=>{
+					tempOprnd = number;
+				},
+				getSaveOprnd: _=>{
+					return saveOprnd;
+				},
+				setSaveOprnd: (number)=>{
+					saveOprnd = number;
+				},
+				getOprtr : _=>{
+					return oprtr;
+				},
+				setOprtr : (op)=>{
+					oprtr = op;
+				},
+				getFontUnit: _=>{
+					return fontUnit;
+				},
+				setFontUnit: (unit)=>{
+					fontUnit = unit;
+				}
+			}
+		}
+		this._disClosure = displayClosure(document.getElementById("mainView"),
+											document.getElementById("subView"),
+												document.getElementById("viewOperator"));
 	};
 
-	get tempOprnd(){
-		return this.#tempOprnd;
+	setFontUnit(unit){
+		this._disClosure.setFontUnit(unit);
 	}
-
-	get oprtr(){
-		return this.#oprtr;
-	}
-
-	set fontUnit(unit){
-		this.#fontUnit = unit;
-	}
-
 	//수식 오류 체크
 	isError(){
-		return Boolean(this.#mainView.dataset.err);
+		return Boolean(this._disClosure.getMainView().dataset.err);
 	}
 
 	setMainNum(number){
-		this.#tempOprnd = number;
-		this.#mainView.value = this.numWithComma(this.#tempOprnd);
+		this._disClosure.setTempOprnd(number);
+		this._disClosure.getMainView().value = this.numWithComma(this._disClosure.getTempOprnd());
 		return this;
 	};
 
 	setSaveOprnd(){
-		this.#saveOprnd = this.#tempOprnd;
-		this.#subView.value = this.numWithComma(this.#saveOprnd);
-		this.#tempOprnd = 0;
-		this.#mainView.value = this.#tempOprnd;
+		this._disClosure.setSaveOprnd(this._disClosure.getTempOprnd());
+		this._disClosure.getSubView().value = this.numWithComma(this._disClosure.getSaveOprnd());
+		this._disClosure.setTempOprnd(0);
+		this._disClosure.getMainView().value = this._disClosure.getTempOprnd();
 		return this;
 	};
 
@@ -47,21 +71,21 @@ const Display = class{
 	};
 
 	addDot(){
-		if (this.#tempOprnd.toString().indexOf('.') > 0) return;
-		else return this.setMainNum(this.#tempOprnd + '.');
+		if (this._disClosure.getTempOprnd().toString().indexOf('.') > 0) return;
+		else return this.setMainNum(this._disClosure.getTempOprnd() + '.');
 	};
 
 	addNumber(number){
 		let lngLmt = 20;
-		if(this.#tempOprnd.toString().length > lngLmt) return;
-		if(this.#tempOprnd === 0 && number == 0) return;
-		if(this.#tempOprnd === 0 && number != 0) this.#tempOprnd = '';
-		this.setMainNum(this.#tempOprnd + String(number)).resizeFont();
+		if(this._disClosure.getTempOprnd().toString().length > lngLmt) return;
+		if(this._disClosure.getTempOprnd() === 0 && number == 0) return;
+		if(this._disClosure.getTempOprnd() === 0 && number != 0) this._disClosure.setTempOprnd('');
+		this.setMainNum(this._disClosure.getTempOprnd() + String(number)).resizeFont();
 	};
 
 	addOprtr(oprtr, e){
-		this.#oprtr = oprtr;
-		this.#viewOprtr.innerHTML = e.target.innerHTML;
+		this._disClosure.setOprtr(oprtr);
+		this._disClosure.getViewOprtr().innerHTML = e.target.innerHTML;
 	};
 
 	numWithComma(num) {
@@ -73,11 +97,11 @@ const Display = class{
 	};
 
 	result(){
-		let equation = this.#saveOprnd + this.#oprtr + this.minusCheck(this.#tempOprnd);
-		if(this.#oprtr!='' && Boolean(this.#saveOprnd)) {
+		let equation = this._disClosure.getSaveOprnd() + this._disClosure.getOprtr() + this.minusCheck(this._disClosure.getTempOprnd());
+		if(this._disClosure.getOprtr()!='' && Boolean(this._disClosure.getSaveOprnd())) {
 			this.allClear();
 			let value = +eval(equation).toFixed(12);
-			if(value == Number.POSITIVE_INFINITY || value == Number.NEGATIVE_INFINITY) this.#mainView.dataset.err = true;
+			if(value == Number.POSITIVE_INFINITY || value == Number.NEGATIVE_INFINITY) this._disClosure.getMainView().dataset.err = true;
 			this.setMainNum(value).resizeFont();
 		}
 	};
@@ -89,65 +113,64 @@ const Display = class{
 	};
 
 	allClear(){
-		this.#tempOprnd = 0;
-		this.#saveOprnd = '';
-		this.#oprtr = '';
-		this.#mainView.value = 0;
-		this.#subView.value = '';
-		this.#viewOprtr.innerHTML = '';
-		this.#mainView.dataset.err = '';
+		this._disClosure.setTempOprnd(0);
+		this._disClosure.setSaveOprnd('');
+		this._disClosure.setOprtr('');
+		this._disClosure.getMainView().value = 0;
+		this._disClosure.getSubView().value = '';
+		this._disClosure.getViewOprtr().innerHTML = '';
+		this._disClosure.getMainView().dataset.err = '';
 	};
 
 	backSpace(){
-		let number = Number(this.#tempOprnd.toString().substring(0, String(this.#tempOprnd).length -1));
-		this.#tempOprnd = isNaN(number) ? 0 : number;
-		this.#mainView.value = this.numWithComma(this.#tempOprnd);
+		let number = Number(this._disClosure.getTempOprnd().toString().substring(0, String(this._disClosure.getTempOprnd()).length -1));
+		this._disClosure.setTempOprnd(isNaN(number) ? 0 : number);
+		this._disClosure.getMainView().value = this.numWithComma(this._disClosure.getTempOprnd());
 		this.resizeFont();
 	};
 
 	//스위치 방식 변경 객체 리터럴
 	resizeFont(){
-		let element = [this.#mainView, this.#subView];
+		let element = [this._disClosure.getMainView(), this._disClosure.getSubView()];
 		element.forEach(element =>{
 			let len = element.value.toString().length;
-			if(this.#fontUnit == "vw"){
-				if (len < 6) return element.style.fontSize = "19" + this.#fontUnit;
+			if(this._disClosure.getFontUnit() == "vw"){
+				if (len < 6) return element.style.fontSize = "19" + this._disClosure.getFontUnit();
 				let switchPortrait = {
 					1: _=> {
-						return element.style.fontSize = "14" + this.#fontUnit;
+						return element.style.fontSize = "14" + this._disClosure.getFontUnit();
 					},
 					2: _=> {
-						return element.style.fontSize = "8" + this.#fontUnit;
+						return element.style.fontSize = "8" + this._disClosure.getFontUnit();
 					},
 					3: _=> {
-						return element.style.fontSize = "6" + this.#fontUnit;
+						return element.style.fontSize = "6" + this._disClosure.getFontUnit();
 					},
 					_default: _=> {
-						return element.style.fontSize = "5" + this.#fontUnit;
+						return element.style.fontSize = "5" + this._disClosure.getFontUnit();
 					}
 				};
 				(Object.hasOwnProperty.call( switchPortrait, Math.floor(len / 6)) && switchPortrait[Math.floor(len / 6)] || switchPortrait._default)();
 			}else{
-				if (len < 6) return element.style.fontSize = "19" + this.#fontUnit;
+				if (len < 6) return element.style.fontSize = "19" + this._disClosure.getFontUnit();
 				let switchLandscape = {
 					0: _=> {
-						return element.style.fontSize = "19" + this.#fontUnit;
+						return element.style.fontSize = "19" + this._disClosure.getFontUnit();
 					},
 					1: _=> {
-						return element.style.fontSize = "12.5" + this.#fontUnit;
+						return element.style.fontSize = "12.5" + this._disClosure.getFontUnit();
 					},
 					2: _=> {
-						return element.style.fontSize = "8.5" + this.#fontUnit;
+						return element.style.fontSize = "8.5" + this._disClosure.getFontUnit();
 					},
 					_default: _=> {
-						return element.style.fontSize = "5.5" + this.#fontUnit;
+						return element.style.fontSize = "5.5" + this._disClosure.getFontUnit();
 					}
 				};
 				(Object.hasOwnProperty.call( switchLandscape, Math.floor(len / 10)) && switchLandscape[Math.floor(len / 10)] || switchLandscape._default)();
 			}
 		});
 	};
-
 };
 
 const Keypad = class{
@@ -155,8 +178,7 @@ const Keypad = class{
 		this._key = key;
 		this._display = display;
 	}
-	click(){
-	}
+	click(){}
 };
 
 //연산자 입력
@@ -174,15 +196,15 @@ const InputOprtr = class extends Keypad{
 	};
 
 	inputStatus(){
-		return Boolean(this._display.tempOprnd == 0 && this._key == '-');
+		return Boolean(this._display._disClosure.getTempOprnd() == 0 && this._key == '-');
 	};
 
 	checkTempOprnd(){
-		return Boolean(this._display.tempOprnd == '-' || this._display.tempOprnd == 0);
+		return Boolean(this._display._disClosure.getTempOprnd() == '-' || this._display._disClosure.getTempOprnd() == 0);
 	};
 
 	canResult(){
-		return Boolean(this._display.tempOprnd && this._display.oprtr && !this.checkTempOprnd());
+		return Boolean(this._display._disClosure.getTempOprnd() && this._display._disClosure.getOprtr() && !this.checkTempOprnd());
 	};
 
 };
@@ -237,41 +259,59 @@ const CheckInput = class{
 	};
 };
 
-//이벤트 감지
+//이벤트
 const DetectEvent = class{
-	#display;
 	constructor() {
-		this.#display = new Display();
+		function dteClosure(){
+			var display = new Display();
+			return {
+				getDisplay: _=> {
+					return display;
+				}
+			}
+		}
+		this._displayClosure = new dteClosure();
 	};
 
 	clickKeypad = (e) => {
-		if(Boolean(this.#display.isError())) return this.#display.allClear();
-		return new CheckInput().checkKey(e, this.#display);
+		if(Boolean(this._displayClosure.getDisplay().isError())) return this._displayClosure.getDisplay().allClear();
+		return new CheckInput().checkKey(e, this._displayClosure.getDisplay());
 	};
 
 	changeUnit = (isPortrait) => {
-		isPortrait ? this.#display.fontUnit = "vw" : this.#display.fontUnit = "vh";
-		this.#display.resizeFont();
+		isPortrait ? this._displayClosure.getDisplay().setFontUnit("vw") : this._displayClosure.getDisplay().setFontUnit("vh");
+		this._displayClosure.getDisplay().resizeFont();
 	};
 };
 
 const Calculator = class{
-	#detectEvent; #isPortrait; #keypad;
 	constructor() {
-		this.#detectEvent = new DetectEvent();
-		this.#isPortrait  = window.matchMedia("(orientation: portrait)");
-		this.#keypad = document.getElementById("keypad");
-		this.#keypad.addEventListener("click", (e)=>{
-			this.#detectEvent.clickKeypad(e);
+		function calculatorClosure(isPortrait, keypad){
+			var detectEvent = new DetectEvent();
+			return {
+				getDetectEvent: _=>{
+					return detectEvent;
+				},
+				getKeypad: _=>{
+					return keypad
+				},
+				getIsPortait: _=>{
+					return isPortrait
+				}
+
+			}
+		}
+		this._calculatorClo = new calculatorClosure(window.matchMedia("(orientation: portrait)"), document.getElementById("keypad"));
+		this._calculatorClo.getKeypad().addEventListener("click", (e)=>{
+			this._calculatorClo.getDetectEvent().clickKeypad(e);
 		});
-		this.#isPortrait.addEventListener("change", (e) => {
-			this.#detectEvent.changeUnit(e.matches);
+		this._calculatorClo.getIsPortait().addEventListener("change", (e)=>{
+			this._calculatorClo.getDetectEvent().changeUnit(e.matches);
 		});
-		this.#detectEvent.changeUnit(this.#isPortrait.matches);
+		this._calculatorClo.getDetectEvent().changeUnit(this._calculatorClo.getIsPortait().matches);
 	};
 };
 
 window.onload = _=>{
 	const calculator = new Calculator();
 };
-
